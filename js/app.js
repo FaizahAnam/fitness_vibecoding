@@ -40,6 +40,7 @@ if (!isFemale) {
   document.getElementById('phase-banner').hidden = true;
   document.querySelector('.period-section').hidden = true;
   document.getElementById('period-prompt').hidden = true;
+  document.getElementById('phase-legend').hidden = true;
 }
 
 // --- Workout storage ---
