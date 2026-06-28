@@ -29,6 +29,17 @@
           <label for="password">Password</label>
           <input type="password" id="password" placeholder="Enter your password" required autocomplete="current-password">
         </div>
+        <div class="field" id="gender-field" hidden>
+          <label>I am a</label>
+          <div class="gender-options">
+            <label class="gender-option">
+              <input type="radio" name="gender" value="male"> Male
+            </label>
+            <label class="gender-option">
+              <input type="radio" name="gender" value="female"> Female
+            </label>
+          </div>
+        </div>
         <p id="auth-error" class="auth-error" hidden></p>
         <button type="submit" id="auth-submit">Log In</button>
       </form>

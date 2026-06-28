@@ -5,6 +5,7 @@ if (!currentUser) {
 
 const STORAGE_KEY = `ft_workouts_${currentUser}`;
 const PERIOD_KEY = `ft_periods_${currentUser}`;
+const isFemale = sessionStorage.getItem('ft_gender') === 'female';
 
 document.getElementById('username-display').textContent = currentUser;
 document.getElementById('logout-btn').addEventListener('click', () => {
@@ -26,12 +27,20 @@ mainTabs.forEach(tab => {
     tabLog.hidden = target !== 'log';
     tabHeatmap.hidden = target !== 'heatmap';
     if (target === 'heatmap') {
-      renderPhaseBanner();
-      renderPeriodHistory();
+      if (isFemale) {
+        renderPhaseBanner();
+        renderPeriodHistory();
+      }
       renderHeatmap();
     }
   });
 });
+
+if (!isFemale) {
+  document.getElementById('phase-banner').hidden = true;
+  document.querySelector('.period-section').hidden = true;
+  document.getElementById('period-prompt').hidden = true;
+}
 
 // --- Workout storage ---
 
@@ -328,7 +337,7 @@ function renderHeatmap() {
     if (count > 0) activeDays++;
     totalWorkouts += count;
 
-    const phaseResult = getPhaseForDate(dateStr, periods);
+    const phaseResult = isFemale ? getPhaseForDate(dateStr, periods) : null;
     const wCount = Math.min(count, 3);
 
     const cell = document.createElement('div');

@@ -1,6 +1,7 @@
 const tabs = document.querySelectorAll('.auth-tabs .tab');
 const submitBtn = document.getElementById('auth-submit');
 const errorEl = document.getElementById('auth-error');
+const genderField = document.getElementById('gender-field');
 let mode = 'login';
 
 tabs.forEach(tab => {
@@ -9,6 +10,7 @@ tabs.forEach(tab => {
     tab.classList.add('active');
     mode = tab.dataset.tab;
     submitBtn.textContent = mode === 'login' ? 'Log In' : 'Sign Up';
+    genderField.hidden = mode !== 'signup';
     errorEl.hidden = true;
   });
 });
@@ -29,6 +31,14 @@ function simpleHash(str) {
   return hash.toString(36);
 }
 
+// Supports legacy accounts stored as plain hash strings
+function getUserData(users, username) {
+  const entry = users[username];
+  if (!entry) return null;
+  if (typeof entry === 'string') return { password: entry, gender: null };
+  return entry;
+}
+
 document.getElementById('auth-form').addEventListener('submit', (e) => {
   e.preventDefault();
   errorEl.hidden = true;
@@ -44,17 +54,26 @@ document.getElementById('auth-form').addEventListener('submit', (e) => {
       errorEl.hidden = false;
       return;
     }
-    users[username] = hashed;
+    const gender = document.querySelector('input[name="gender"]:checked')?.value;
+    if (!gender) {
+      errorEl.textContent = 'Please select Male or Female to continue.';
+      errorEl.hidden = false;
+      return;
+    }
+    users[username] = { password: hashed, gender };
     saveUsers(users);
     sessionStorage.setItem('ft_user', username);
+    sessionStorage.setItem('ft_gender', gender);
     window.location.href = 'index.html';
   } else {
-    if (!users[username] || users[username] !== hashed) {
+    const userData = getUserData(users, username);
+    if (!userData || userData.password !== hashed) {
       errorEl.textContent = 'Incorrect username or password.';
       errorEl.hidden = false;
       return;
     }
     sessionStorage.setItem('ft_user', username);
+    sessionStorage.setItem('ft_gender', userData.gender || '');
     window.location.href = 'index.html';
   }
 });
