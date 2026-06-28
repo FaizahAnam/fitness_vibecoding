@@ -5,6 +5,7 @@ if (!currentUser) {
 
 const STORAGE_KEY = `ft_workouts_${currentUser}`;
 const PERIOD_KEY = `ft_periods_${currentUser}`;
+const CALORIE_KEY = `ft_calories_${currentUser}`;
 const isFemale = sessionStorage.getItem('ft_gender') === 'female';
 
 document.getElementById('username-display').textContent = currentUser;
@@ -18,6 +19,7 @@ document.getElementById('logout-btn').addEventListener('click', () => {
 const mainTabs = document.querySelectorAll('.main-tab');
 const tabLog = document.getElementById('tab-log');
 const tabHeatmap = document.getElementById('tab-heatmap');
+const tabCalories = document.getElementById('tab-calories');
 
 mainTabs.forEach(tab => {
   tab.addEventListener('click', () => {
@@ -26,6 +28,7 @@ mainTabs.forEach(tab => {
     const target = tab.dataset.tab;
     tabLog.hidden = target !== 'log';
     tabHeatmap.hidden = target !== 'heatmap';
+    tabCalories.hidden = target !== 'calories';
     if (target === 'heatmap') {
       if (isFemale) {
         renderPhaseBanner();
@@ -33,6 +36,7 @@ mainTabs.forEach(tab => {
       }
       renderHeatmap();
     }
+    if (target === 'calories') renderCalorieLog();
   });
 });
 
@@ -356,4 +360,106 @@ function renderHeatmap() {
 
   document.getElementById('heatmap-summary').textContent =
     `${activeDays} active day${activeDays !== 1 ? 's' : ''} · ${totalWorkouts} workout${totalWorkouts !== 1 ? 's' : ''} this month`;
+}
+
+// --- Calories ---
+
+const MEAL_ORDER = ['Breakfast', 'Lunch', 'Dinner', 'Snack'];
+
+function loadCalories() {
+  return JSON.parse(localStorage.getItem(CALORIE_KEY) || '[]');
+}
+
+function saveCalories(entries) {
+  localStorage.setItem(CALORIE_KEY, JSON.stringify(entries));
+}
+
+let calViewDate = todayStr();
+
+document.getElementById('food-date').value = todayStr();
+
+document.getElementById('cal-prev-day').addEventListener('click', () => {
+  const d = new Date(calViewDate + 'T00:00:00');
+  d.setDate(d.getDate() - 1);
+  calViewDate = d.toISOString().slice(0, 10);
+  renderCalorieLog();
+});
+
+document.getElementById('cal-next-day').addEventListener('click', () => {
+  const d = new Date(calViewDate + 'T00:00:00');
+  d.setDate(d.getDate() + 1);
+  calViewDate = d.toISOString().slice(0, 10);
+  renderCalorieLog();
+});
+
+document.getElementById('calorie-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const entries = loadCalories();
+  entries.push({
+    id: Date.now(),
+    date: document.getElementById('food-date').value,
+    food: document.getElementById('food-name').value.trim(),
+    calories: parseInt(document.getElementById('food-calories').value, 10),
+    meal: document.getElementById('meal-type').value,
+  });
+  saveCalories(entries);
+  calViewDate = document.getElementById('food-date').value;
+  document.getElementById('food-name').value = '';
+  document.getElementById('food-calories').value = '';
+  renderCalorieLog();
+});
+
+document.getElementById('calorie-list').addEventListener('click', (e) => {
+  const btn = e.target.closest('.delete');
+  if (!btn) return;
+  const id = parseInt(btn.dataset.id, 10);
+  saveCalories(loadCalories().filter(e => e.id !== id));
+  renderCalorieLog();
+});
+
+function renderCalorieLog() {
+  const all = loadCalories();
+  const dayEntries = all.filter(e => e.date === calViewDate);
+
+  document.getElementById('calorie-date-title').textContent = formatDate(calViewDate);
+
+  const total = dayEntries.reduce((sum, e) => sum + e.calories, 0);
+  document.getElementById('calorie-total').textContent = `${total.toLocaleString()} kcal`;
+
+  const listEl = document.getElementById('calorie-list');
+  listEl.innerHTML = '';
+
+  const emptyEl = document.getElementById('calorie-empty');
+  if (!dayEntries.length) {
+    emptyEl.hidden = false;
+    return;
+  }
+  emptyEl.hidden = true;
+
+  // Group by meal type in order
+  const grouped = {};
+  dayEntries.forEach(e => {
+    if (!grouped[e.meal]) grouped[e.meal] = [];
+    grouped[e.meal].push(e);
+  });
+
+  MEAL_ORDER.forEach(meal => {
+    if (!grouped[meal]) return;
+
+    const mealHeader = document.createElement('li');
+    mealHeader.className = 'calorie-meal-header';
+    mealHeader.textContent = meal;
+    listEl.appendChild(mealHeader);
+
+    grouped[meal].forEach(entry => {
+      const li = document.createElement('li');
+      li.className = 'calorie-item';
+      li.innerHTML = `
+        <span class="calorie-food">${entry.food}</span>
+        <span class="calorie-kcal">${entry.calories.toLocaleString()} kcal</span>
+        <button class="delete" aria-label="Delete" data-id="${entry.id}">&times;</button>
+      `;
+      listEl.appendChild(li);
+    });
+  });
 }
