@@ -14,17 +14,54 @@ body {
 header {
   background: #2d6a4f;
   color: white;
-  padding: 2rem;
-  text-align: center;
+  padding: 1.5rem 2rem;
+}
+
+.header-inner {
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
 }
 
 header h1 {
-  font-size: 2rem;
-  margin-bottom: 0.25rem;
+  font-size: 1.75rem;
+  margin-bottom: 0.15rem;
 }
 
 header p {
   opacity: 0.85;
+  font-size: 0.9rem;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.user-info span {
+  font-size: 0.9rem;
+  opacity: 0.9;
+  font-weight: 600;
+}
+
+#logout-btn {
+  padding: 0.35rem 0.85rem;
+  background: rgba(255,255,255,0.15);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.4);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+#logout-btn:hover {
+  background: rgba(255,255,255,0.25);
 }
 
 main {

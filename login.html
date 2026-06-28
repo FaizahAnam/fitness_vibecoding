@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fitness Tracker — Login</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+  <header>
+    <h1>Fitness Tracker</h1>
+    <p>Log your workouts and stay on track.</p>
+  </header>
+
+  <main>
+    <section class="auth-card">
+      <div class="auth-tabs">
+        <button class="tab active" data-tab="login">Log In</button>
+        <button class="tab" data-tab="signup">Sign Up</button>
+      </div>
+
+      <form id="auth-form">
+        <div class="field">
+          <label for="username">Username</label>
+          <input type="text" id="username" placeholder="Enter your username" required autocomplete="username">
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Enter your password" required autocomplete="current-password">
+        </div>
+        <p id="auth-error" class="auth-error" hidden></p>
+        <button type="submit" id="auth-submit">Log In</button>
+      </form>
+    </section>
+  </main>
+
+  <script src="js/auth.js"></script>
+</body>
+</html>

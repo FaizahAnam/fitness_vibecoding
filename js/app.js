@@ -1,13 +1,26 @@
+const currentUser = sessionStorage.getItem('ft_user');
+if (!currentUser) {
+  window.location.href = 'login.html';
+}
+
+const STORAGE_KEY = `ft_workouts_${currentUser}`;
+
+document.getElementById('username-display').textContent = currentUser;
+document.getElementById('logout-btn').addEventListener('click', () => {
+  sessionStorage.removeItem('ft_user');
+  window.location.href = 'login.html';
+});
+
 const form = document.getElementById('workout-form');
 const list = document.getElementById('workouts');
 const emptyState = document.getElementById('empty-state');
 
 function loadWorkouts() {
-  return JSON.parse(localStorage.getItem('workouts') || '[]');
+  return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
 }
 
 function saveWorkouts(workouts) {
-  localStorage.setItem('workouts', JSON.stringify(workouts));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(workouts));
 }
 
 function formatDate(dateStr) {
@@ -55,6 +68,7 @@ form.addEventListener('submit', (e) => {
   });
   saveWorkouts(workouts);
   form.reset();
+  document.getElementById('date').valueAsDate = new Date();
   renderWorkouts();
 });
 
@@ -67,7 +81,5 @@ list.addEventListener('click', (e) => {
   renderWorkouts();
 });
 
-// Set date input default to today
 document.getElementById('date').valueAsDate = new Date();
-
 renderWorkouts();
