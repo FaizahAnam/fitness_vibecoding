@@ -752,3 +752,169 @@ button[type="submit"]:hover {
   text-align: center;
   padding: 1rem 0;
 }
+
+/* Description field & estimate */
+.label-optional {
+  font-weight: 400;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  margin-left: 0.4rem;
+}
+
+textarea {
+  padding: 0.6rem 0.85rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-input);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  color: var(--color-text);
+  background: var(--color-bg);
+  outline: none;
+  resize: vertical;
+  width: 100%;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  line-height: 1.5;
+}
+
+textarea::placeholder { color: var(--color-text-muted); }
+
+textarea:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(176, 92, 115, 0.18);
+}
+
+.estimate-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+#estimate-btn {
+  padding: 0.4rem 1rem;
+  background: transparent;
+  color: var(--color-accent);
+  border: 1.5px solid var(--color-accent);
+  border-radius: var(--radius-pill);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+}
+
+#estimate-btn:hover:not(:disabled) {
+  background: var(--color-blush);
+}
+
+#estimate-btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+#estimate-status {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+}
+
+/* Estimate breakdown card */
+#estimate-breakdown {
+  background: var(--color-blush);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-input);
+  padding: 1rem 1.1rem;
+  margin-bottom: 1rem;
+}
+
+#breakdown-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 0.75rem;
+}
+
+#breakdown-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 0.875rem;
+  color: var(--color-text);
+  gap: 1rem;
+}
+
+#breakdown-list li small {
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+}
+
+#breakdown-list li span:last-child {
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--color-accent-dark);
+}
+
+.breakdown-total {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--color-border);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-accent-dark);
+}
+
+#breakdown-note {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+.breakdown-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.breakdown-actions button {
+  padding: 0.35rem 0.9rem;
+  border-radius: var(--radius-pill);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: background 0.15s;
+}
+
+#use-estimate-btn {
+  background: var(--color-accent);
+  color: white;
+  border-color: var(--color-accent);
+}
+
+#use-estimate-btn:hover { background: var(--color-accent-dark); }
+
+#dismiss-estimate-btn {
+  background: transparent;
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
+}
+
+#dismiss-estimate-btn:hover { background: var(--color-sage); }
+
+/* Unmatched ingredient row */
+#breakdown-list li.unmatched span:first-child { color: var(--color-text-muted); font-style: italic; }
+#breakdown-list li.unmatched span:last-child { color: var(--color-text-muted); }
+
+/* Live calorie hint below food name input */
+.live-calorie-hint {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-accent);
+  margin-top: 0.2rem;
+  min-height: 1.1em;
+}

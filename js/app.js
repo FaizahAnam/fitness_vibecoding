@@ -440,6 +440,8 @@ document.getElementById('calorie-form').addEventListener('submit', (e) => {
   calViewDate = document.getElementById('food-date').value;
   document.getElementById('food-name').value = '';
   document.getElementById('food-calories').value = '';
+  document.getElementById('food-description').value = '';
+  hideBreakdown();
   renderCalorieLog();
 });
 
@@ -470,7 +472,6 @@ function renderCalorieLog() {
   }
   emptyEl.hidden = true;
 
-  // Group by meal type in order
   const grouped = {};
   dayEntries.forEach(e => {
     if (!grouped[e.meal]) grouped[e.meal] = [];
@@ -497,3 +498,80 @@ function renderCalorieLog() {
     });
   });
 }
+
+// --- Calorie estimation (local food database) ---
+
+function hideBreakdown() {
+  document.getElementById('estimate-breakdown').hidden = true;
+  document.getElementById('breakdown-list').innerHTML = '';
+  document.getElementById('breakdown-note').textContent = '';
+  document.getElementById('estimate-status').textContent = '';
+}
+
+function showBreakdown(items, total) {
+  const bList = document.getElementById('breakdown-list');
+  const bTotal = document.getElementById('breakdown-total-val');
+  const bNote = document.getElementById('breakdown-note');
+
+  bList.innerHTML = '';
+  items.forEach(item => {
+    const li = document.createElement('li');
+    const label = item.size ? `${item.size} ${item.displayName}` : item.displayName;
+    const qty = item.qty !== 1 ? `×${item.qty}` : '';
+    const unit = item.unit ? item.unit : '';
+    const detail = [qty, unit].filter(Boolean).join(' ');
+    li.innerHTML = `
+      <span>${label}${detail ? ' <small>(' + detail + ')</small>' : ''}</span>
+      <span>${item.calories !== null ? item.calories + ' kcal' : '?'}</span>
+    `;
+    if (!item.matched) li.classList.add('unmatched');
+    bList.appendChild(li);
+  });
+
+  bTotal.textContent = `~${total} kcal`;
+  const unmatched = items.filter(i => !i.matched).map(i => i.raw);
+  bNote.textContent = unmatched.length
+    ? `Could not find: ${unmatched.join(', ')}. Enter calories manually.`
+    : '';
+
+  document.getElementById('estimate-breakdown').hidden = false;
+}
+
+// Live hint below food-name input
+const foodNameInput = document.getElementById('food-name');
+const liveHint = document.createElement('span');
+liveHint.className = 'live-calorie-hint';
+foodNameInput.parentNode.appendChild(liveHint);
+
+foodNameInput.addEventListener('input', () => {
+  const result = quickLookup(foodNameInput.value.trim());
+  liveHint.textContent = result ? `≈ ${result.calories} kcal` : '';
+});
+
+document.getElementById('estimate-btn').addEventListener('click', () => {
+  const foodName = document.getElementById('food-name').value.trim();
+  const description = document.getElementById('food-description').value.trim();
+  const source = description || foodName;
+
+  if (!source) {
+    document.getElementById('estimate-status').textContent = 'Enter a food item or ingredients first.';
+    return;
+  }
+
+  document.getElementById('estimate-status').textContent = '';
+  hideBreakdown();
+
+  const items = parseIngredientList(source);
+  const total = items.reduce((sum, i) => sum + (i.calories || 0), 0);
+  showBreakdown(items, total);
+  document.getElementById('food-calories').value = total;
+});
+
+document.getElementById('use-estimate-btn').addEventListener('click', () => {
+  hideBreakdown();
+});
+
+document.getElementById('dismiss-estimate-btn').addEventListener('click', () => {
+  document.getElementById('food-calories').value = '';
+  hideBreakdown();
+});

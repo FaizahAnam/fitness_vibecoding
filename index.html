@@ -163,6 +163,29 @@
             <label for="food-name">Food Item</label>
             <input type="text" id="food-name" placeholder="e.g. Grilled chicken, Banana" required>
           </div>
+          <div class="field">
+            <label for="food-description">Description / Ingredients <span class="label-optional">optional — used to estimate calories</span></label>
+            <textarea id="food-description" rows="2" placeholder="e.g. medium banana, or: semi skimmed milk, 6 blueberries, half a banana, 4 almonds"></textarea>
+            <div class="estimate-row">
+              <button type="button" id="estimate-btn">Estimate Calories</button>
+              <span id="estimate-status"></span>
+            </div>
+          </div>
+
+          <!-- Breakdown shown after estimation -->
+          <div id="estimate-breakdown" hidden>
+            <ul id="breakdown-list"></ul>
+            <div class="breakdown-total">
+              <span>Estimated total</span>
+              <span id="breakdown-total-val"></span>
+            </div>
+            <p id="breakdown-note"></p>
+            <div class="breakdown-actions">
+              <button type="button" id="use-estimate-btn">Use this estimate</button>
+              <button type="button" id="dismiss-estimate-btn">Dismiss</button>
+            </div>
+          </div>
+
           <div class="calorie-form-row">
             <div class="field">
               <label for="food-calories">Calories (kcal)</label>
@@ -206,6 +229,7 @@
 
   </main>
 
+  <script src="js/foods.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
