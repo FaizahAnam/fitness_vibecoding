@@ -127,10 +127,10 @@ renderWorkouts();
 // --- Period & cycle phase ---
 
 const PHASES = {
-  menstrual:  { label: 'Menstrual Phase',  tip: 'Low energy — rest, yoga, or gentle walks',          emoji: '🌑' },
-  follicular: { label: 'Follicular Phase', tip: 'Rising energy — great for cardio & strength',        emoji: '🌒' },
-  ovulation:  { label: 'Ovulation',        tip: 'Peak performance — ideal for HIIT & heavy lifting',  emoji: '🌕' },
-  luteal:     { label: 'Luteal Phase',     tip: 'Winding down — moderate exercise, avoid overtraining', emoji: '🌖' },
+  menstrual:  { label: 'Menstrual Phase',  tip: 'Low energy — rest, yoga, or gentle walks',          emoji: '🌑', insight: "You're in your menstrual phase — rest, gentle yoga, or short walks tend to feel best right now." },
+  follicular: { label: 'Follicular Phase', tip: 'Rising energy — great for cardio & strength',        emoji: '🌒', insight: "You're in your follicular phase — rising energy makes this a great time for cardio and strength." },
+  ovulation:  { label: 'Ovulation',        tip: 'Peak performance — ideal for HIIT & heavy lifting',  emoji: '🌕', insight: "You're in your ovulation phase — peak energy means HIIT and heavy lifting are ideal right now." },
+  luteal:     { label: 'Luteal Phase',     tip: 'Winding down — moderate exercise, avoid overtraining', emoji: '🌖', insight: "You're in your luteal phase — lighter movement like walks or yoga tends to feel best right now." },
 };
 
 function loadPeriods() {
@@ -189,11 +189,16 @@ function renderPhaseBanner() {
 
   if (!periods.length) {
     banner.hidden = true;
+    renderCycleInsight();
     return;
   }
 
   const result = getPhaseForDate(todayStr(), periods);
-  if (!result) { banner.hidden = true; return; }
+  if (!result) {
+    banner.hidden = true;
+    renderCycleInsight();
+    return;
+  }
 
   const { phase, cycleDay } = result;
   const info = PHASES[phase];
@@ -206,6 +211,31 @@ function renderPhaseBanner() {
   document.getElementById('phase-banner-badge').textContent = info.emoji;
 
   banner.hidden = false;
+  renderCycleInsight();
+}
+
+function renderCycleInsight() {
+  const insightBox = document.getElementById('cycle-insight');
+  if (!isFemale) {
+    insightBox.hidden = true;
+    return;
+  }
+
+  const periods = loadPeriods();
+  if (!periods.length) {
+    insightBox.hidden = true;
+    return;
+  }
+
+  const result = getPhaseForDate(todayStr(), periods);
+  if (!result) {
+    insightBox.hidden = true;
+    return;
+  }
+
+  const info = PHASES[result.phase];
+  document.getElementById('cycle-insight-text').textContent = info.insight;
+  insightBox.hidden = false;
 }
 
 // --- Period form ---
@@ -343,7 +373,6 @@ function renderHeatmap() {
     totalWorkouts += count;
 
     const phaseResult = isFemale ? getPhaseForDate(dateStr, periods) : null;
-    const wCount = Math.min(count, 3);
 
     const cell = document.createElement('div');
     cell.className = 'heatmap-cell' + (dateStr === today ? ' today' : '');
@@ -353,13 +382,18 @@ function renderHeatmap() {
     const workoutLabel = count === 0 ? 'no workout' : `${count} workout${count > 1 ? 's' : ''}`;
     cell.title = `${formatDate(dateStr)}${phaseLabel ? ' · ' + phaseLabel : ''} · ${workoutLabel}`;
 
-    cell.innerHTML = `<span class="cell-day" data-w="${wCount}">${day}</span>`;
+    cell.innerHTML = `
+      <span class="cell-day-num">${day}</span>
+      ${count > 0 ? '<span class="cell-workout-dot"></span>' : ''}
+    `;
 
     cells.appendChild(cell);
   }
 
   document.getElementById('heatmap-summary').textContent =
     `${activeDays} active day${activeDays !== 1 ? 's' : ''} · ${totalWorkouts} workout${totalWorkouts !== 1 ? 's' : ''} this month`;
+
+  if (isFemale) renderCycleInsight();
 }
 
 // --- Calories ---

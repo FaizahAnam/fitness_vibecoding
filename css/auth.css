@@ -5,31 +5,38 @@
 
 .auth-tabs {
   display: flex;
+  gap: 0.25rem;
+  background: var(--color-bg);
+  border-radius: var(--radius-pill);
+  padding: 0.3rem;
   margin-bottom: 1.5rem;
-  border-bottom: 2px solid #eee;
 }
 
 .auth-tabs .tab {
   flex: 1;
-  padding: 0.6rem;
-  background: none;
+  padding: 0.55rem 1rem;
+  background: transparent;
   border: none;
-  font-size: 0.95rem;
+  border-radius: var(--radius-pill);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
   font-weight: 600;
-  color: #999;
+  color: var(--color-text-muted);
   cursor: pointer;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -2px;
-  transition: color 0.15s, border-color 0.15s;
+  transition: background 0.15s, color 0.15s;
 }
 
 .auth-tabs .tab.active {
-  color: #2d6a4f;
-  border-bottom-color: #2d6a4f;
+  background: var(--color-accent);
+  color: white;
+}
+
+.auth-tabs .tab:not(.active):hover {
+  color: var(--color-text);
 }
 
 .auth-error {
-  color: #e63946;
+  color: var(--color-accent);
   font-size: 0.85rem;
   margin-bottom: 0.75rem;
 }
@@ -46,12 +53,12 @@
   gap: 0.4rem;
   font-size: 0.95rem;
   font-weight: 400;
-  color: #333;
+  color: var(--color-text);
   cursor: pointer;
 }
 
 .gender-option input[type="radio"] {
-  accent-color: #2d6a4f;
+  accent-color: var(--color-accent);
   width: 16px;
   height: 16px;
   cursor: pointer;
