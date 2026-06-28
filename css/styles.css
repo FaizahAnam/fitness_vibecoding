@@ -216,6 +216,150 @@ button[type="submit"]:hover {
   background: #f0f0f0;
 }
 
+/* Phase banner */
+.phase-banner {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+.phase-banner-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  gap: 1rem;
+}
+
+.phase-banner-inner[data-phase="menstrual"]  { background: linear-gradient(135deg, #ffeaea, #ffd0d0); }
+.phase-banner-inner[data-phase="follicular"] { background: linear-gradient(135deg, #fff0f8, #ffd6ed); }
+.phase-banner-inner[data-phase="ovulation"]  { background: linear-gradient(135deg, #ffd6ec, #ffb3d9); }
+.phase-banner-inner[data-phase="luteal"]     { background: linear-gradient(135deg, #f5eeff, #e8d5ff); }
+
+.phase-banner-label {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #2d2d2d;
+  margin-bottom: 0.15rem;
+}
+
+.phase-banner-day {
+  font-size: 0.85rem;
+  color: #555;
+  margin-bottom: 0.25rem;
+}
+
+.phase-banner-tip {
+  font-size: 0.85rem;
+  color: #444;
+  font-style: italic;
+}
+
+.phase-banner-badge {
+  font-size: 2.5rem;
+  flex-shrink: 0;
+}
+
+/* Period tracking form */
+.period-section {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+
+.period-section details > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  user-select: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #333;
+  list-style: none;
+}
+
+.period-section details > summary::-webkit-details-marker { display: none; }
+
+.period-section details > summary::after {
+  content: '＋';
+  font-size: 1.1rem;
+  color: #999;
+  transition: transform 0.2s;
+}
+
+.period-section details[open] > summary::after {
+  content: '－';
+}
+
+.period-section details > summary:hover {
+  background: #fafafa;
+}
+
+.period-entry-count {
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: #999;
+  margin-left: auto;
+  margin-right: 0.75rem;
+}
+
+.period-section form {
+  padding: 0 1.5rem 1rem;
+}
+
+.period-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.75rem;
+}
+
+@media (max-width: 480px) {
+  .period-form-grid { grid-template-columns: 1fr; }
+}
+
+.period-history {
+  list-style: none;
+  padding: 0 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border-top: 1px solid #f0f0f0;
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+}
+
+.period-history-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.period-history-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #e84393;
+  flex-shrink: 0;
+}
+
+.period-history-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.period-history-info strong {
+  font-size: 0.875rem;
+}
+
+.period-history-info span {
+  font-size: 0.78rem;
+  color: #888;
+}
+
 /* Heatmap */
 .heatmap-header {
   display: flex;
@@ -224,9 +368,7 @@ button[type="submit"]:hover {
   margin-bottom: 1rem;
 }
 
-.heatmap-header h2 {
-  margin-bottom: 0;
-}
+.heatmap-header h2 { margin-bottom: 0; }
 
 .heatmap-header button {
   background: none;
@@ -240,83 +382,140 @@ button[type="submit"]:hover {
   transition: background 0.15s;
 }
 
-.heatmap-header button:hover {
-  background: #f0f0f0;
+.heatmap-header button:hover { background: #f0f0f0; }
+
+.heatmap-legends {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
 }
 
-.heatmap-legend {
+.legend-group { display: flex; flex-direction: column; gap: 0.35rem; }
+
+.legend-group-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #aaa;
+}
+
+.legend-row {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: 0.75rem;
   flex-wrap: wrap;
 }
 
 .legend-item {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
-  font-size: 0.8rem;
+  gap: 0.3rem;
+  font-size: 0.78rem;
   color: #666;
 }
 
+/* Phase swatches */
 .legend-swatch {
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
   border-radius: 3px;
   display: inline-block;
+  flex-shrink: 0;
 }
 
-.legend-swatch[data-level="0"] { background: #e0e0e0; }
-.legend-swatch[data-level="1"] { background: #95d5b2; }
-.legend-swatch[data-level="2"] { background: #52b788; }
-.legend-swatch[data-level="3"] { background: #1b4332; }
+.legend-swatch[data-phase="menstrual"]  { background: #f4a7b4; }
+.legend-swatch[data-phase="follicular"] { background: #f9c9e0; }
+.legend-swatch[data-phase="ovulation"]  { background: #e84393; }
+.legend-swatch[data-phase="luteal"]     { background: #d4a8f0; }
 
+/* Workout dot swatches in legend */
+.workout-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.workout-dot[data-w="0"] { background: #ddd; }
+.workout-dot[data-w="1"] { background: #95d5b2; }
+.workout-dot[data-w="2"] { background: #2d6a4f; }
+.workout-dot[data-w="3"] { background: #1b4332; }
+
+/* Calendar grid */
 .heatmap-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 6px;
+  gap: 5px;
 }
 
 .day-label {
   text-align: center;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 600;
-  color: #999;
-  padding-bottom: 0.25rem;
+  color: #bbb;
+  padding-bottom: 0.2rem;
 }
 
-#heatmap-cells {
-  display: contents;
-}
+#heatmap-cells { display: contents; }
 
 .heatmap-cell {
   aspect-ratio: 1;
-  border-radius: 5px;
-  background: #e0e0e0;
+  border-radius: 6px;
+  background: #efefef;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: 0.8rem;
-  color: #555;
+  gap: 2px;
   cursor: default;
-  transition: transform 0.1s;
+  transition: transform 0.12s;
+  position: relative;
 }
 
-.heatmap-cell:not(.empty):hover {
-  transform: scale(1.15);
+.heatmap-cell:not(.empty):hover { transform: scale(1.12); z-index: 1; }
+
+.heatmap-cell.empty { background: transparent; }
+
+/* Today ring */
+.heatmap-cell.today {
+  outline: 2px solid #2d6a4f;
+  outline-offset: -2px;
 }
 
-.heatmap-cell.empty {
-  background: transparent;
+/* Phase backgrounds */
+.heatmap-cell[data-phase="menstrual"]  { background: #f9cdd6; }
+.heatmap-cell[data-phase="follicular"] { background: #fde8f3; }
+.heatmap-cell[data-phase="ovulation"]  { background: #f4a7cc; }
+.heatmap-cell[data-phase="luteal"]     { background: #ead5f7; }
+
+.cell-day {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #333;
+  line-height: 1;
 }
 
-.heatmap-cell[data-level="1"] { background: #95d5b2; color: #1b4332; }
-.heatmap-cell[data-level="2"] { background: #52b788; color: white; }
-.heatmap-cell[data-level="3"] { background: #1b4332; color: white; }
+/* Workout dot inside cell */
+.heatmap-cell .workout-dot {
+  width: 6px;
+  height: 6px;
+}
+
+.heatmap-cell .workout-dot[data-w="3"] { width: 8px; height: 8px; }
 
 #heatmap-summary {
   margin-top: 1rem;
   font-size: 0.875rem;
   color: #666;
   text-align: center;
+}
+
+.period-prompt {
+  margin-top: 0.75rem;
+  font-size: 0.82rem;
+  color: #bbb;
+  text-align: center;
+  font-style: italic;
 }

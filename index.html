@@ -58,20 +58,78 @@
       </section>
     </div>
 
-    <!-- Tab 2: Heatmap -->
+    <!-- Tab 2: Heatmap + Cycle -->
     <div id="tab-heatmap" hidden>
+
+      <!-- Current phase banner -->
+      <section id="phase-banner" class="phase-banner" hidden>
+        <div class="phase-banner-inner" id="phase-banner-inner">
+          <div class="phase-banner-text">
+            <p class="phase-banner-label" id="phase-banner-label"></p>
+            <p class="phase-banner-day" id="phase-banner-day"></p>
+            <p class="phase-banner-tip" id="phase-banner-tip"></p>
+          </div>
+          <div class="phase-banner-badge" id="phase-banner-badge"></div>
+        </div>
+      </section>
+
+      <!-- Period tracking form -->
+      <section class="period-section">
+        <details id="period-details">
+          <summary>
+            <span>Track Your Period</span>
+            <span class="period-entry-count" id="period-entry-count"></span>
+          </summary>
+          <form id="period-form">
+            <div class="period-form-grid">
+              <div class="field">
+                <label for="period-start">Period Start Date</label>
+                <input type="date" id="period-start" required>
+              </div>
+              <div class="field">
+                <label for="cycle-length">Cycle Length <small>(days)</small></label>
+                <input type="number" id="cycle-length" value="28" min="21" max="45">
+              </div>
+              <div class="field">
+                <label for="period-length">Period Duration <small>(days)</small></label>
+                <input type="number" id="period-length" value="5" min="1" max="10">
+              </div>
+            </div>
+            <button type="submit">Save Entry</button>
+          </form>
+          <ul id="period-history" class="period-history"></ul>
+        </details>
+      </section>
+
+      <!-- Calendar -->
       <section>
         <div class="heatmap-header">
           <button id="prev-month" aria-label="Previous month">&#8249;</button>
           <h2 id="heatmap-title"></h2>
           <button id="next-month" aria-label="Next month">&#8250;</button>
         </div>
-        <div class="heatmap-legend">
-          <span class="legend-item"><span class="legend-swatch" data-level="0"></span>No workout</span>
-          <span class="legend-item"><span class="legend-swatch" data-level="1"></span>1 workout</span>
-          <span class="legend-item"><span class="legend-swatch" data-level="2"></span>2 workouts</span>
-          <span class="legend-item"><span class="legend-swatch" data-level="3"></span>3+</span>
+
+        <div class="heatmap-legends">
+          <div class="legend-group">
+            <span class="legend-group-title">Cycle phase</span>
+            <div class="legend-row">
+              <span class="legend-item"><span class="legend-swatch" data-phase="menstrual"></span>Menstrual</span>
+              <span class="legend-item"><span class="legend-swatch" data-phase="follicular"></span>Follicular</span>
+              <span class="legend-item"><span class="legend-swatch" data-phase="ovulation"></span>Ovulation</span>
+              <span class="legend-item"><span class="legend-swatch" data-phase="luteal"></span>Luteal</span>
+            </div>
+          </div>
+          <div class="legend-group">
+            <span class="legend-group-title">Workouts</span>
+            <div class="legend-row">
+              <span class="legend-item"><span class="workout-dot" data-w="0"></span>None</span>
+              <span class="legend-item"><span class="workout-dot" data-w="1"></span>1</span>
+              <span class="legend-item"><span class="workout-dot" data-w="2"></span>2</span>
+              <span class="legend-item"><span class="workout-dot" data-w="3"></span>3+</span>
+            </div>
+          </div>
         </div>
+
         <div class="heatmap-grid">
           <div class="day-label">Mon</div>
           <div class="day-label">Tue</div>
@@ -82,8 +140,11 @@
           <div class="day-label">Sun</div>
           <div id="heatmap-cells"></div>
         </div>
+
         <p id="heatmap-summary"></p>
+        <p id="period-prompt" class="period-prompt">Add your period date above to see cycle phases on the calendar.</p>
       </section>
+
     </div>
   </main>
 
