@@ -339,10 +339,7 @@ function renderHeatmap() {
     const workoutLabel = count === 0 ? 'no workout' : `${count} workout${count > 1 ? 's' : ''}`;
     cell.title = `${formatDate(dateStr)}${phaseLabel ? ' · ' + phaseLabel : ''} · ${workoutLabel}`;
 
-    cell.innerHTML = `
-      <span class="cell-day">${day}</span>
-      <span class="workout-dot" data-w="${wCount}"></span>
-    `;
+    cell.innerHTML = `<span class="cell-day" data-w="${wCount}">${day}</span>`;
 
     cells.appendChild(cell);
   }

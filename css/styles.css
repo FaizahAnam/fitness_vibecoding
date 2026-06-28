@@ -424,24 +424,12 @@ button[type="submit"]:hover {
   flex-shrink: 0;
 }
 
-.legend-swatch[data-phase="menstrual"]  { background: #f4a7b4; }
+.legend-swatch[data-phase="menstrual"]  { background: #f9cdd6; }
 .legend-swatch[data-phase="follicular"] { background: #f9c9e0; }
 .legend-swatch[data-phase="ovulation"]  { background: #e84393; }
 .legend-swatch[data-phase="luteal"]     { background: #d4a8f0; }
 
-/* Workout dot swatches in legend */
-.workout-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  display: inline-block;
-  flex-shrink: 0;
-}
-
-.workout-dot[data-w="0"] { background: #ddd; }
-.workout-dot[data-w="1"] { background: #95d5b2; }
-.workout-dot[data-w="2"] { background: #2d6a4f; }
-.workout-dot[data-w="3"] { background: #1b4332; }
+/* Workout dot swatches in legend — kept for any legacy use */
 
 /* Calendar grid */
 .heatmap-grid {
@@ -492,18 +480,20 @@ button[type="submit"]:hover {
 
 .cell-day {
   font-size: 0.75rem;
-  font-weight: 600;
-  color: #333;
-  line-height: 1;
+  font-weight: 700;
+  color: #444;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  flex-shrink: 0;
 }
 
-/* Workout dot inside cell */
-.heatmap-cell .workout-dot {
-  width: 6px;
-  height: 6px;
-}
-
-.heatmap-cell .workout-dot[data-w="3"] { width: 8px; height: 8px; }
+.cell-day[data-w="1"] { background: #52b788; color: white; }
+.cell-day[data-w="2"] { background: #2d6a4f; color: white; }
+.cell-day[data-w="3"] { background: #1b4332; color: white; }
 
 #heatmap-summary {
   margin-top: 1rem;
