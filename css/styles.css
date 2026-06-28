@@ -183,3 +183,140 @@ button[type="submit"]:hover {
   text-align: center;
   padding: 1rem 0;
 }
+
+/* Main tabs */
+.main-tabs {
+  display: flex;
+  gap: 0.5rem;
+  background: white;
+  border-radius: 8px;
+  padding: 0.4rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+.main-tab {
+  flex: 1;
+  padding: 0.55rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #666;
+  background: none;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.main-tab.active {
+  background: #2d6a4f;
+  color: white;
+}
+
+.main-tab:not(.active):hover {
+  background: #f0f0f0;
+}
+
+/* Heatmap */
+.heatmap-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.heatmap-header h2 {
+  margin-bottom: 0;
+}
+
+.heatmap-header button {
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1.4rem;
+  line-height: 1;
+  padding: 0.1rem 0.5rem;
+  color: #555;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.heatmap-header button:hover {
+  background: #f0f0f0;
+}
+
+.heatmap-legend {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.legend-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.legend-swatch[data-level="0"] { background: #e0e0e0; }
+.legend-swatch[data-level="1"] { background: #95d5b2; }
+.legend-swatch[data-level="2"] { background: #52b788; }
+.legend-swatch[data-level="3"] { background: #1b4332; }
+
+.heatmap-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.day-label {
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #999;
+  padding-bottom: 0.25rem;
+}
+
+#heatmap-cells {
+  display: contents;
+}
+
+.heatmap-cell {
+  aspect-ratio: 1;
+  border-radius: 5px;
+  background: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  color: #555;
+  cursor: default;
+  transition: transform 0.1s;
+}
+
+.heatmap-cell:not(.empty):hover {
+  transform: scale(1.15);
+}
+
+.heatmap-cell.empty {
+  background: transparent;
+}
+
+.heatmap-cell[data-level="1"] { background: #95d5b2; color: #1b4332; }
+.heatmap-cell[data-level="2"] { background: #52b788; color: white; }
+.heatmap-cell[data-level="3"] { background: #1b4332; color: white; }
+
+#heatmap-summary {
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  color: #666;
+  text-align: center;
+}
