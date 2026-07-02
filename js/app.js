@@ -238,6 +238,22 @@ function renderCycleInsight() {
   insightBox.hidden = false;
 }
 
+// --- Period sub-tabs (Manual / PDF import) ---
+
+const periodTabs = document.querySelectorAll('.period-tab');
+const ptabManual = document.getElementById('ptab-manual');
+const ptabPDF    = document.getElementById('ptab-pdf');
+
+periodTabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    periodTabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const target = tab.dataset.ptab;
+    ptabManual.hidden = target !== 'manual';
+    ptabPDF.hidden    = target !== 'pdf';
+  });
+});
+
 // --- Period form ---
 
 document.getElementById('period-start').valueAsDate = new Date();
@@ -301,6 +317,201 @@ document.getElementById('period-history').addEventListener('click', (e) => {
   renderPhaseBanner();
   renderPeriodHistory();
   renderHeatmap();
+});
+
+// --- Apple Health PDF import ---
+
+// Month name → 0-based index
+const MONTH_NAMES = {
+  january:1,february:2,march:3,april:4,may:5,june:6,
+  july:7,august:8,september:9,october:10,november:11,december:12,
+  jan:1,feb:2,mar:3,apr:4,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12,
+};
+
+function toISO(y, m, d) {
+  return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+}
+
+// Extract all date strings found in PDF text, return as sorted ISO strings
+function extractDatesFromText(text) {
+  const found = new Set();
+
+  // "January 15, 2024" or "Jan 15 2024"
+  const re1 = /\b(january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|jun|jul|aug|sep|oct|nov|dec)\.?\s+(\d{1,2}),?\s+(\d{4})\b/gi;
+  for (const m of text.matchAll(re1)) {
+    const mon = MONTH_NAMES[m[1].toLowerCase().replace('.','')];
+    if (mon) found.add(toISO(m[3], mon, parseInt(m[2])));
+  }
+
+  // "15 January 2024" or "15 Jan 2024"
+  const re2 = /\b(\d{1,2})\s+(january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|jun|jul|aug|sep|oct|nov|dec)\.?\s+(\d{4})\b/gi;
+  for (const m of text.matchAll(re2)) {
+    const mon = MONTH_NAMES[m[2].toLowerCase().replace('.','')];
+    if (mon) found.add(toISO(m[3], mon, parseInt(m[1])));
+  }
+
+  // ISO: "2024-01-15"
+  const re3 = /\b(\d{4})-(\d{2})-(\d{2})\b/g;
+  for (const m of text.matchAll(re3)) {
+    const y = parseInt(m[1]), mo = parseInt(m[2]), d = parseInt(m[3]);
+    if (y >= 2000 && y <= 2100 && mo >= 1 && mo <= 12 && d >= 1 && d <= 31)
+      found.add(toISO(y, mo, d));
+  }
+
+  // "01/15/2024" — treat as MM/DD/YYYY (Apple Health is US-based)
+  const re4 = /\b(\d{1,2})\/(\d{1,2})\/(\d{4})\b/g;
+  for (const m of text.matchAll(re4)) {
+    const mo = parseInt(m[1]), d = parseInt(m[2]), y = parseInt(m[3]);
+    if (y >= 2000 && y <= 2100 && mo >= 1 && mo <= 12 && d >= 1 && d <= 31)
+      found.add(toISO(y, mo, d));
+  }
+
+  return [...found].sort();
+}
+
+// From a list of all dates, pick likely cycle START dates.
+// Strategy: find groups where consecutive dates in the list are 20-45 days apart.
+// If they look evenly spaced, they are cycle starts. Otherwise, return all dates.
+function inferCycleStarts(allDates) {
+  if (!allDates.length) return [];
+
+  // Try to find dates that are labelled as starts by surrounding context (best case)
+  // Fall back to spacing-based heuristic
+
+  // Spacing heuristic: filter dates that are ≥ 20 days apart from the previous kept date
+  const MIN_CYCLE = 18, MAX_CYCLE = 50;
+  const starts = [allDates[0]];
+  for (let i = 1; i < allDates.length; i++) {
+    const prev = new Date(starts[starts.length - 1] + 'T00:00:00');
+    const curr = new Date(allDates[i] + 'T00:00:00');
+    const diff = Math.round((curr - prev) / 86400000);
+    if (diff >= MIN_CYCLE && diff <= MAX_CYCLE) {
+      starts.push(allDates[i]);
+    }
+  }
+
+  // If we got reasonable results (≥ 2 dates spaced like cycles) return them
+  if (starts.length >= 2) return starts;
+
+  // Otherwise return all dates for the user to choose from
+  return allDates;
+}
+
+async function extractTextFromPDF(file) {
+  const pdfjsLib = window['pdfjs-dist/build/pdf'];
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+  const arrayBuffer = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  let fullText = '';
+  for (let p = 1; p <= pdf.numPages; p++) {
+    const page = await pdf.getPage(p);
+    const content = await page.getTextContent();
+    fullText += content.items.map(i => i.str).join(' ') + '\n';
+  }
+  return fullText;
+}
+
+let pdfDetectedDates = []; // dates found from PDF, shown in preview
+
+async function handlePDFUpload(file) {
+  const statusEl  = document.getElementById('pdf-parse-status');
+  const previewEl = document.getElementById('pdf-preview');
+  const listEl    = document.getElementById('pdf-cycle-list');
+
+  statusEl.textContent  = 'Reading PDF…';
+  previewEl.hidden      = true;
+  listEl.innerHTML      = '';
+  pdfDetectedDates      = [];
+
+  try {
+    const text = await extractTextFromPDF(file);
+    const allDates = extractDatesFromText(text);
+
+    if (!allDates.length) {
+      statusEl.textContent = 'No dates found in this PDF. Make sure it is an Apple Health cycle export.';
+      return;
+    }
+
+    const cycleStarts = inferCycleStarts(allDates);
+    pdfDetectedDates  = cycleStarts;
+    statusEl.textContent = '';
+
+    // Render preview checklist
+    const existing = new Set(loadPeriods().map(p => p.startDate));
+    listEl.innerHTML = '';
+    cycleStarts.forEach(dateStr => {
+      const alreadyIn = existing.has(dateStr);
+      const li = document.createElement('li');
+      li.className = 'pdf-cycle-item';
+      li.innerHTML = `
+        <label>
+          <input type="checkbox" value="${dateStr}" ${alreadyIn ? '' : 'checked'}>
+          <span>${formatDate(dateStr)}${alreadyIn ? ' <em>(already saved)</em>' : ''}</span>
+        </label>
+      `;
+      listEl.appendChild(li);
+    });
+
+    document.getElementById('pdf-preview-title').textContent =
+      `Found ${cycleStarts.length} cycle start${cycleStarts.length !== 1 ? 's' : ''} — select which to import:`;
+    previewEl.hidden = false;
+
+  } catch (err) {
+    statusEl.textContent = `Could not read PDF: ${err.message}`;
+  }
+}
+
+// File input
+document.getElementById('pdf-file-input').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (file) handlePDFUpload(file);
+});
+
+// Drag-and-drop
+const dropArea = document.getElementById('pdf-drop-area');
+dropArea.addEventListener('dragover', e => { e.preventDefault(); dropArea.classList.add('dragover'); });
+dropArea.addEventListener('dragleave', () => dropArea.classList.remove('dragover'));
+dropArea.addEventListener('drop', e => {
+  e.preventDefault();
+  dropArea.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type === 'application/pdf') handlePDFUpload(file);
+});
+
+// Confirm import
+document.getElementById('pdf-import-btn').addEventListener('click', () => {
+  const checked = [...document.querySelectorAll('#pdf-cycle-list input[type=checkbox]:checked')]
+    .map(cb => cb.value);
+
+  if (!checked.length) return;
+
+  const periods = loadPeriods();
+  let added = 0;
+  checked.forEach(dateStr => {
+    if (!periods.find(p => p.startDate === dateStr)) {
+      periods.push({ startDate: dateStr, cycleLength: 28, periodLength: 5 });
+      added++;
+    }
+  });
+
+  savePeriods(periods);
+  renderPhaseBanner();
+  renderPeriodHistory();
+  renderHeatmap();
+
+  document.getElementById('pdf-preview').hidden = true;
+  document.getElementById('pdf-parse-status').textContent =
+    `Imported ${added} cycle${added !== 1 ? 's' : ''}. You can adjust cycle/period length in the history below.`;
+  document.getElementById('pdf-file-input').value = '';
+});
+
+// Cancel
+document.getElementById('pdf-cancel-btn').addEventListener('click', () => {
+  document.getElementById('pdf-preview').hidden = true;
+  document.getElementById('pdf-parse-status').textContent = '';
+  document.getElementById('pdf-file-input').value = '';
 });
 
 // --- Heatmap ---
